@@ -47,6 +47,8 @@ const Game = (() => {
     if (!state.twoPlayer && state.currentTurn !== 0) return;
     if (state.lines.has(lineId)) return;
 
+    _triggerMoveHaptic();
+
     const mover   = state.currentTurn;
     const claimed = _applyMove(lineId, mover);
     _renderBoard();
@@ -173,6 +175,15 @@ const Game = (() => {
       }
     }
     return claimed;
+  }
+
+  function _triggerMoveHaptic() {
+    if (!window.navigator || typeof window.navigator.vibrate !== 'function') return;
+    try {
+      window.navigator.vibrate(12);
+    } catch {
+      // Ignore platforms that expose vibrate() but block it in the browser.
+    }
   }
 
   function _checkGameOver() {

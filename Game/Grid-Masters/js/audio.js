@@ -27,16 +27,45 @@ const Audio = (() => {
   /* ── State ─────────────────────────────────────────── */
   let _muted        = localStorage.getItem(MUTE_KEY) === 'true';
   let _musicStarted = false;   // becomes true after first playMusic() call
+  let _pageActive   = true;
+  const _activeSfx  = new Set();
 
   /* ── Private: sync everything to _muted flag ──────── */
   function _apply() {
-    if (_muted) {
-      _music.pause();
-    } else if (_musicStarted) {
-      _music.play().catch(() => {});
-    }
+    _syncPlayback();
     _updateMuteUI();
     localStorage.setItem(MUTE_KEY, _muted);
+  }
+
+  function _canPlayAudio() {
+    return !_muted && _pageActive;
+  }
+
+  function _syncPlayback() {
+    if (_canPlayAudio() && _musicStarted) {
+      _music.play().catch(() => {});
+      return;
+    }
+    _music.pause();
+    _pauseLineSfx();
+  }
+
+  function _pauseLineSfx() {
+    _activeSfx.forEach((node) => {
+      node.pause();
+      node.currentTime = 0;
+    });
+    _activeSfx.clear();
+  }
+
+  function _setPageActive(active) {
+    if (_pageActive === active) return;
+    _pageActive = active;
+    _syncPlayback();
+  }
+
+  function _refreshPageActive() {
+    _setPageActive(!document.hidden);
   }
 
   function _updateMuteUI() {
@@ -49,12 +78,7 @@ const Audio = (() => {
   /** Start background music (call on first user interaction). */
   function playMusic() {
     _musicStarted = true;
-    if (!_muted) {
-      _music.play().catch(() => {
-        // Autoplay blocked — will retry on next user gesture via the
-        // document click listener below.
-      });
-    }
+    _syncPlayback();
   }
 
   /** Stop background music (e.g. game ends). */
@@ -65,11 +89,14 @@ const Audio = (() => {
 
   /** Play the line-draw sound effect. */
   function playLineSfx() {
-    if (_muted) return;
+    if (!_canPlayAudio()) return;
     // Clone node to allow rapid overlapping plays on fast moves
     const clone = _sfx.cloneNode();
     clone.volume = _sfx.volume;
-    clone.play().catch(() => {});
+    _activeSfx.add(clone);
+    clone.addEventListener('ended', () => _activeSfx.delete(clone), { once: true });
+    clone.addEventListener('error', () => _activeSfx.delete(clone), { once: true });
+    clone.play().catch(() => _activeSfx.delete(clone));
   }
 
   /** Toggle mute. Returns new muted state (true = muted). */
@@ -84,14 +111,28 @@ const Audio = (() => {
   function isMuted(){ return _muted; }
 
   /* ── Initialise UI to saved state ──────────────────── */
-  document.addEventListener('DOMContentLoaded', _updateMuteUI);
+  document.addEventListener('DOMContentLoaded', () => {
+    _updateMuteUI();
+    _refreshPageActive();
+  });
 
   /* ── Retry music on any user interaction if blocked ── */
   document.addEventListener('click', () => {
-    if (_musicStarted && !_muted && _music.paused) {
+    if (_musicStarted && _canPlayAudio() && _music.paused) {
       _music.play().catch(() => {});
     }
   }, { passive: true });
+
+  /* ── Stop audio whenever the game is not foregrounded ─ */
+  document.addEventListener('visibilitychange', () => {
+    _setPageActive(!document.hidden);
+  });
+  window.addEventListener('focus', _refreshPageActive);
+  window.addEventListener('blur', () => _setPageActive(false));
+  window.addEventListener('pagehide', () => _setPageActive(false));
+  window.addEventListener('pageshow', _refreshPageActive);
+  document.addEventListener('freeze', () => _setPageActive(false));
+  document.addEventListener('resume', _refreshPageActive);
 
   /* ── window.GridMasters external API ────────────────── */
   window.GridMasters = {
