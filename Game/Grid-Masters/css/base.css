@@ -4,6 +4,15 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .screen {
@@ -90,8 +99,8 @@ html, body {
 
 /* ── Turn badge ───────────────────────────────────────────── */
 .turn-badge { transition: background-color 0.3s, color 0.3s; }
-.turn-badge[data-state="player"] { background:#ff6a00; color:#3d1c00; }
-.turn-badge[data-state="bot"]    { background:#75bdd1; color:#002f3a; }
+.turn-badge[data-state="player"] { background:#75bdd1; color:#002f3a; }
+.turn-badge[data-state="bot"]    { background:#ff6a00; color:#3d1c00; }
 .turn-badge[data-state="over"]   { background:#e4e2e2; color:#3f484b; }
 
 /* ── Score card highlight ─────────────────────────────────── */
@@ -123,8 +132,10 @@ html, body {
 
 /* ── Board wrapper — responsive ───────────────────────────── */
 .board-wrapper {
-  width:  min(calc(100vw - 32px), calc(100vh - 200px), 680px);
-  height: min(calc(100vw - 32px), calc(100vh - 200px), 680px);
+  width: min(calc(100vw - 16px), 100%, 680px);
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: 1;
   flex-shrink: 0;
 }
 
@@ -153,7 +164,6 @@ html, body {
 @media (min-width: 768px) {
   .screen-inner { padding-left: 24px; padding-right: 24px; }
   .board-wrapper {
-    width:  min(calc(100vh - 180px), 700px);
-    height: min(calc(100vh - 180px), 700px);
+    width: min(calc(100vw - 48px), 100%, 700px);
   }
 }

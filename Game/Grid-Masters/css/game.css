@@ -6,6 +6,22 @@
   cursor: default;
 }
 
+#screen-game {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.game-shell {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.game-board-area {
+  overflow: hidden;
+}
+
 /* ── Confetti overlay (Lottie) ────────────────────────────── */
 #confetti-overlay {
   transition: opacity 0.5s ease;

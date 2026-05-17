@@ -82,7 +82,13 @@ const Game = (() => {
     } catch { return false; }
   }
 
-  function clearSave() { localStorage.removeItem(SAVE_KEY); }
+  function clearSave() {
+    try {
+      localStorage.removeItem(SAVE_KEY);
+    } catch {
+      // Storage can be unavailable in some embedded/file contexts.
+    }
+  }
   function getState()  { return state; }
 
   /* -- Bot (1P only) ----------------------------------------- */

@@ -25,7 +25,7 @@ const Audio = (() => {
   _sfx.volume  = 0.75;
 
   /* ── State ─────────────────────────────────────────── */
-  let _muted        = localStorage.getItem(MUTE_KEY) === 'true';
+  let _muted        = _readMuted();
   let _musicStarted = false;   // becomes true after first playMusic() call
   let _pageActive   = true;
   const _activeSfx  = new Set();
@@ -34,7 +34,23 @@ const Audio = (() => {
   function _apply() {
     _syncPlayback();
     _updateMuteUI();
-    localStorage.setItem(MUTE_KEY, _muted);
+    _writeMuted();
+  }
+
+  function _readMuted() {
+    try {
+      return window.localStorage.getItem(MUTE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  function _writeMuted() {
+    try {
+      window.localStorage.setItem(MUTE_KEY, _muted);
+    } catch {
+      // Storage can be unavailable in some embedded/file contexts.
+    }
   }
 
   function _canPlayAudio() {

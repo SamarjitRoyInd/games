@@ -82,14 +82,22 @@ const Main = (() => {
 
   function _setupMenu() {
     document.getElementById('btn-play').addEventListener('click', () => {
-      Audio.playMusic();
+      _playMusicSafely();
       showScreen('screen-setup');
     });
     document.getElementById('btn-resume').addEventListener('click', () => {
-      Audio.playMusic();
+      _playMusicSafely();
       showScreen('screen-game');
       Game.resume();
     });
+  }
+
+  function _playMusicSafely() {
+    try {
+      if (typeof Audio !== 'undefined' && Audio.playMusic) Audio.playMusic();
+    } catch {
+      // The game should keep navigating even if browser audio is blocked.
+    }
   }
 
   function _refreshResumeButton() {
