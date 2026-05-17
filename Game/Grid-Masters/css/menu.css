@@ -1,0 +1,4 @@
+/* Tailwind handles menu screen styles. Custom overrides below. */
+
+/* Ensure decorative bg dots in landing don't block interactions */
+#bg-dot-grid { pointer-events: none; }

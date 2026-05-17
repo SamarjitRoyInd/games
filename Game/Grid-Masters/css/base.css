@@ -1,0 +1,159 @@
+/* ── Screen system ────────────────────────────────────────── */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Wood texture — pure CSS multi-layer, NO pseudo-element  */
+/* Layer 1 (top): warm cream tint   Layer 2 (bottom): tiled jpg */
+.wood-texture {
+  background-color: #B5723A;
+  background-image:
+    linear-gradient(rgba(245,239,230,0.52), rgba(245,239,230,0.52)),
+    url('../assets/wood-bg.jpg');
+  background-size: auto, 400px 300px;
+  background-repeat: repeat, repeat;
+}
+
+/* ── Title bounce ─────────────────────────────────────────── */
+@keyframes title-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-5px); }
+}
+.title-bounce {
+  animation: title-bounce 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* ── Score pulse ──────────────────────────────────────────── */
+@keyframes score-pop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.45); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.score-pulse { animation: score-pop 0.4s ease-out forwards; }
+
+/* ── Victory animations ───────────────────────────────────── */
+@keyframes victory-in {
+  0%   { opacity: 0; transform: scale(0.65) translateY(28px); }
+  70%  { transform: scale(1.05) translateY(-3px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes badge-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.2);  opacity: 1; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+@keyframes victory-bounce {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50%       { transform: scale(1.08) rotate(2deg); }
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-24px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+.victory-emoji  { display: inline-block; animation: victory-bounce 1.6s ease-in-out infinite; }
+.victory-card-in { animation: victory-in 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.badge-pop      { animation: badge-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.35s both; }
+
+/* ── CSS confetti ─────────────────────────────────────────── */
+.css-confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 45;
+  overflow: hidden;
+}
+.css-confetti span {
+  position: absolute;
+  top: -24px;
+  animation: confetti-fall linear forwards;
+}
+
+/* ── Turn badge ───────────────────────────────────────────── */
+.turn-badge { transition: background-color 0.3s, color 0.3s; }
+.turn-badge[data-state="player"] { background:#ff6a00; color:#3d1c00; }
+.turn-badge[data-state="bot"]    { background:#75bdd1; color:#002f3a; }
+.turn-badge[data-state="over"]   { background:#e4e2e2; color:#3f484b; }
+
+/* ── Score card highlight ─────────────────────────────────── */
+.score-card.active-turn {
+  outline: 2px solid #0e6779;
+  outline-offset: 1px;
+}
+
+/* ── Turn-indicator dots ──────────────────────────────────── */
+#dot-player.lit { background-color: #75bdd1 !important; transform: scale(1.4); }
+#dot-bot.lit    { background-color: #ff6a00 !important; transform: scale(1.4); }
+
+/* ── Difficulty toggle ───────────────────────────────────── */
+.toggle-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 12px;
+  border: 2px solid rgba(196,168,130,0.5);
+  background: none;
+  font-family: Rubik, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn.active  { background:#ff6a00; color:#fff; border-color:#cc5500; font-weight:700; }
+.toggle-btn:not(.active):hover { background: rgba(0,0,0,0.05); }
+
+/* ── Board wrapper — responsive ───────────────────────────── */
+.board-wrapper {
+  width:  min(calc(100vw - 32px), calc(100vh - 200px), 680px);
+  height: min(calc(100vw - 32px), calc(100vh - 200px), 680px);
+  flex-shrink: 0;
+}
+
+/* ── 3D press buttons ─────────────────────────────────────── */
+.btn-3d { transition: transform 0.07s, box-shadow 0.07s; }
+.btn-3d:active {
+  transform: translateY(5px);
+  box-shadow: 0 1px 0 0 var(--btn-shadow, #000) !important;
+}
+
+/* ── Material Symbols ─────────────────────────────────────── */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* ── Desktop container ────────────────────────────────────── */
+.screen-inner {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+@media (min-width: 768px) {
+  .screen-inner { padding-left: 24px; padding-right: 24px; }
+  .board-wrapper {
+    width:  min(calc(100vh - 180px), 700px);
+    height: min(calc(100vh - 180px), 700px);
+  }
+}

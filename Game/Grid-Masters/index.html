@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid Masters</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { rubik: ['Rubik','system-ui','sans-serif'] },
+          colors: {
+            'wood-light':     '#F5EFE6',
+            'wood-dark':      '#DBC7AF',
+            'board-bg':       '#2C3E50',
+            'board-darker':   '#1e2e3d',
+            'primary':        '#0e6779',
+            'primary-light':  '#75bdd1',
+            'secondary':      '#ff6a00',
+            'secondary-light':'#ffb380',
+            'vibrant-lime':   '#A4DE02',
+          }
+        }
+      }
+    }
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+
+<body class="font-rubik" style="background:#F5EFE6;">
+
+  <!-- GLOBAL MUTE BUTTON -->
+  <button id="btn-mute"
+    class="fixed top-3 right-3 z-50 w-10 h-10 rounded-full flex items-center justify-center
+           text-white hover:opacity-90 transition-opacity shadow-lg"
+    style="background:rgba(44,62,80,0.82);">
+    <span id="mute-icon" class="material-symbols-outlined text-xl">volume_up</span>
+  </button>
+
+  <!-- LOTTIE CONFETTI -->
+  <div id="confetti-overlay" class="fixed inset-0 z-40 pointer-events-none" style="opacity:0;">
+    <div id="confetti-container" class="w-full h-full"></div>
+  </div>
+
+  <!-- CSS CONFETTI -->
+  <div id="css-confetti" class="css-confetti" style="display:none;"></div>
+
+  <!-- ======================================================
+       SCREEN 1: MENU
+  ====================================================== -->
+  <div id="screen-menu" class="screen active wood-texture">
+    <div class="min-h-screen flex flex-col items-center justify-center px-5 py-10 gap-7">
+      <div class="screen-inner flex flex-col items-center gap-7">
+
+        <div class="text-center">
+          <h1 class="title-bounce text-5xl sm:text-6xl md:text-7xl font-black tracking-tight"
+            style="color:#2C3E50;">Grid Masters</h1>
+          <p class="mt-2 text-sm font-semibold tracking-widest uppercase"
+            style="color:rgba(44,62,80,0.42);">Dots &amp; Boxes &mdash; Reimagined</p>
+        </div>
+
+        <div class="rounded-3xl p-5 shadow-xl border-4"
+          style="background:#2C3E50;border-color:#1e2e3d;">
+          <svg width="128" height="128" viewBox="0 0 128 128">
+            <g fill="#FFD700" opacity="0.85">
+              <circle cx="16" cy="16" r="4"/><circle cx="48" cy="16" r="4"/><circle cx="80" cy="16" r="4"/><circle cx="112" cy="16" r="4"/>
+              <circle cx="16" cy="48" r="4"/><circle cx="48" cy="48" r="4"/><circle cx="80" cy="48" r="4"/><circle cx="112" cy="48" r="4"/>
+              <circle cx="16" cy="80" r="4"/><circle cx="48" cy="80" r="4"/><circle cx="80" cy="80" r="4"/><circle cx="112" cy="80" r="4"/>
+              <circle cx="16" cy="112" r="4"/><circle cx="48" cy="112" r="4"/><circle cx="80" cy="112" r="4"/><circle cx="112" cy="112" r="4"/>
+            </g>
+            <line x1="16" y1="16" x2="48" y2="16" stroke="#75bdd1" stroke-width="4.5" stroke-linecap="round"/>
+            <line x1="16" y1="16" x2="16" y2="48" stroke="#75bdd1" stroke-width="4.5" stroke-linecap="round"/>
+            <line x1="48" y1="16" x2="48" y2="48" stroke="#ff6a00" stroke-width="4.5" stroke-linecap="round"/>
+            <line x1="16" y1="48" x2="48" y2="48" stroke="#ff6a00" stroke-width="4.5" stroke-linecap="round"/>
+            <rect x="16" y="16" width="32" height="32" fill="rgba(255,106,0,0.22)" rx="3"/>
+            <text x="32" y="32" text-anchor="middle" dominant-baseline="middle"
+              font-family="Rubik,sans-serif" font-size="11" font-weight="800"
+              fill="rgba(255,219,204,0.9)">B</text>
+            <line x1="48" y1="16" x2="80" y2="16" stroke="#75bdd1" stroke-width="4.5" stroke-linecap="round"/>
+            <line x1="80" y1="16" x2="80" y2="48" stroke="#75bdd1" stroke-width="4.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="flex flex-col gap-3 w-full max-w-xs">
+          <button id="btn-play"
+            class="btn-3d w-full py-4 rounded-2xl font-bold text-lg text-white
+                   flex items-center justify-center gap-2"
+            style="background:#0e6779;box-shadow:0 6px 0 0 #004e5d;--btn-shadow:#004e5d;">
+            <span class="material-symbols-outlined">play_arrow</span>
+            New Game
+          </button>
+          <button id="btn-resume"
+            class="hidden btn-3d w-full py-3 rounded-2xl font-bold text-base text-white
+                   flex items-center justify-center gap-2"
+            style="background:#2C3E50;box-shadow:0 5px 0 0 #0f1e2b;--btn-shadow:#0f1e2b;">
+            <span class="material-symbols-outlined">save</span>
+            Resume Game
+          </button>
+        </div>
+
+        <p class="text-xs font-medium tracking-wider" style="color:rgba(44,62,80,0.35);">
+          Play vs Bot or challenge a Friend
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SCREEN 2: SETUP
+  ====================================================== -->
+  <div id="screen-setup" class="screen wood-texture">
+    <div class="min-h-screen flex flex-col items-center justify-start px-5 py-8">
+      <div class="screen-inner flex flex-col gap-5">
+
+        <!-- Header -->
+        <div class="flex items-center">
+          <button id="btn-back-menu" class="p-2 rounded-xl transition-colors" style="color:#2C3E50;"
+            onmouseover="this.style.background='rgba(44,62,80,0.1)'"
+            onmouseout="this.style.background='transparent'">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h2 class="flex-1 text-center text-2xl md:text-3xl font-black pr-10"
+            style="color:#2C3E50;">Game Setup</h2>
+        </div>
+
+        <!-- Form card -->
+        <div class="rounded-3xl shadow-xl p-6 md:p-8 flex flex-col gap-5"
+          style="background:rgba(255,255,255,0.80);border:2px solid rgba(219,199,175,0.5);">
+
+          <!-- ── Game Mode toggle ── -->
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold uppercase tracking-wider"
+              style="color:rgba(44,62,80,0.55);">Game Mode</label>
+            <div id="mode-toggle" class="flex gap-2">
+              <button class="toggle-btn active" data-value="bot">
+                🤖 vs Bot
+              </button>
+              <button class="toggle-btn" data-value="friend">
+                👥 vs Friend
+              </button>
+            </div>
+          </div>
+
+          <!-- ── Player 1 name ── -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold uppercase tracking-wider"
+              style="color:rgba(44,62,80,0.55);" id="label-player1">
+              Your Name
+            </label>
+            <input id="player-name" type="text" maxlength="16" placeholder="Player 1"
+              class="rounded-xl px-4 py-3 text-base font-semibold focus:outline-none transition-colors"
+              style="border:2px solid rgba(219,199,175,0.6);background:#F5EFE6;color:#2C3E50;" />
+          </div>
+
+          <!-- ── Player 2 name (2P only) ── -->
+          <div id="section-player2" class="flex flex-col gap-1.5" style="display:none!important;">
+            <label class="text-xs font-bold uppercase tracking-wider"
+              style="color:rgba(44,62,80,0.55);">Player 2 Name</label>
+            <input id="player2-name" type="text" maxlength="16" placeholder="Player 2"
+              class="rounded-xl px-4 py-3 text-base font-semibold focus:outline-none transition-colors"
+              style="border:2px solid rgba(255,106,0,0.4);background:#F5EFE6;color:#2C3E50;" />
+          </div>
+
+          <!-- ── Board size ── -->
+          <div class="flex flex-col gap-3">
+            <label class="text-xs font-bold uppercase tracking-wider"
+              style="color:rgba(44,62,80,0.55);">Board Size</label>
+            <div class="flex items-center gap-4">
+              <button id="size-dec"
+                class="btn-3d w-12 h-12 rounded-xl text-white font-black flex items-center justify-center
+                       disabled:opacity-30 disabled:cursor-not-allowed"
+                style="background:#2C3E50;box-shadow:0 4px 0 0 #0f1e2b;--btn-shadow:#0f1e2b;">
+                <span class="material-symbols-outlined">remove</span>
+              </button>
+              <span id="size-display"
+                class="flex-1 text-center text-3xl font-black tabular-nums"
+                style="color:#2C3E50;">5 &times; 5</span>
+              <button id="size-inc"
+                class="btn-3d w-12 h-12 rounded-xl text-white font-black flex items-center justify-center
+                       disabled:opacity-30 disabled:cursor-not-allowed"
+                style="background:#2C3E50;box-shadow:0 4px 0 0 #0f1e2b;--btn-shadow:#0f1e2b;">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+            </div>
+            <div class="flex justify-center">
+              <div class="rounded-2xl p-3 shadow-inner" style="background:#2C3E50;">
+                <svg id="preview-svg" width="108" height="108"></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Difficulty (bot mode only) ── -->
+          <div id="section-difficulty" class="flex flex-col gap-2">
+            <label class="text-xs font-bold uppercase tracking-wider"
+              style="color:rgba(44,62,80,0.55);">Bot Difficulty</label>
+            <div id="difficulty-toggle" class="flex gap-2">
+              <button class="toggle-btn" data-value="easy">Easy</button>
+              <button class="toggle-btn active" data-value="smart">Smart</button>
+            </div>
+          </div>
+
+          <!-- ── Start ── -->
+          <button id="btn-start"
+            class="btn-3d w-full py-4 rounded-2xl font-black text-xl text-white
+                   flex items-center justify-center gap-2 mt-1"
+            style="background:#ff6a00;box-shadow:0 6px 0 0 #cc5500;--btn-shadow:#cc5500;">
+            <span class="material-symbols-outlined">sports_esports</span>
+            Start Game!
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SCREEN 3: GAME
+  ====================================================== -->
+  <div id="screen-game" class="screen" style="background:#2C3E50;">
+    <div class="flex flex-col" style="height:100vh;min-height:100vh;">
+
+      <!-- Header -->
+      <div class="game-header flex-shrink-0">
+        <button id="btn-quit"
+          class="p-2 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div id="header-turn-badge" data-state="player"
+          class="turn-badge flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm">
+          <span id="header-turn-icon" class="material-symbols-outlined text-base">person</span>
+          <span id="turn-label">YOUR TURN</span>
+          <span id="turn-sublabel" class="hidden font-mono tabular-nums text-xs opacity-80"></span>
+        </div>
+
+        <div style="width:40px;"></div>
+      </div>
+
+      <!-- Score row -->
+      <div class="score-row flex-shrink-0">
+        <!-- P1 card -->
+        <div id="card-player"
+          class="score-card flex-1 rounded-2xl px-3 py-2 flex items-center justify-between transition-all"
+          style="background:rgba(14,103,121,0.22);border:2px solid rgba(14,103,121,0.4);">
+          <div class="flex items-center gap-2">
+            <span id="dot-player" class="turn-dot w-2.5 h-2.5 rounded-full transition-all"
+              style="background:#75bdd1;"></span>
+            <span id="display-player-name" class="font-bold text-sm truncate"
+              style="max-width:90px;color:#75bdd1;">P1</span>
+          </div>
+          <span id="score-player" class="font-black text-2xl md:text-3xl tabular-nums"
+            style="color:#75bdd1;">0</span>
+        </div>
+
+        <!-- P2 / Bot card -->
+        <div id="card-bot"
+          class="score-card flex-1 rounded-2xl px-3 py-2 flex items-center justify-between transition-all"
+          style="background:rgba(255,106,0,0.18);border:2px solid rgba(255,106,0,0.38);">
+          <div class="flex items-center gap-2">
+            <span id="dot-bot" class="turn-dot w-2.5 h-2.5 rounded-full transition-all"
+              style="background:#ffb380;"></span>
+            <span id="display-player2-name" class="font-bold text-sm"
+              style="color:#ffb380;">Bot</span>
+          </div>
+          <span id="score-bot" class="font-black text-2xl md:text-3xl tabular-nums"
+            style="color:#ffb380;">0</span>
+        </div>
+      </div>
+
+      <!-- Board -->
+      <div class="flex-1 flex items-center justify-center p-2 md:p-4" style="min-height:0;">
+        <div class="board-wrapper rounded-3xl shadow-2xl p-2"
+          style="background:#1e2e3d;border:1px solid rgba(255,255,255,0.1);">
+          <svg id="game-svg" style="display:block;width:100%;height:100%;"></svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SCREEN 4: RESULT
+  ====================================================== -->
+  <div id="screen-result" class="screen wood-texture">
+    <div class="min-h-screen flex flex-col items-center justify-center px-5 py-10">
+      <div class="screen-inner flex flex-col items-center">
+
+        <div id="result-victory-card"
+          class="result-card w-full max-w-sm rounded-3xl shadow-2xl p-6 md:p-8
+                 flex flex-col items-center gap-5"
+          style="background:rgba(255,255,255,0.88);border:2px solid rgba(219,199,175,0.4);">
+
+          <!-- Trophy -->
+          <div class="flex flex-col items-center gap-1">
+            <span id="result-emoji" class="victory-emoji leading-none" style="font-size:80px;">🏆</span>
+            <h2 id="result-title"
+              class="victory-title text-4xl md:text-5xl font-black text-center mt-2"
+              style="color:#ff6a00;text-shadow:0 5px 0 #7b2f00;letter-spacing:0.06em;">
+              VICTORY!
+            </h2>
+            <p id="result-subtitle" class="text-sm font-semibold mt-1"
+              style="color:rgba(44,62,80,0.52);">Grid Masters Champion</p>
+          </div>
+
+          <!-- Bento scores -->
+          <div class="grid grid-cols-2 gap-3 w-full">
+            <div id="result-player-card" class="bento-card">
+              <span id="result-player-name"
+                class="text-xs font-bold uppercase tracking-wider"
+                style="color:#0e6779;">P1</span>
+              <span id="result-player-score" class="bento-score" style="color:#1b1c1c;">0</span>
+              <span id="result-winner-badge" class="winner-badge badge-pop" style="display:none;">
+                Winner!
+              </span>
+            </div>
+            <div id="result-bot-card" class="bento-card">
+              <span id="result-player2-name"
+                class="text-xs font-bold uppercase tracking-wider"
+                style="color:#9CA3AF;">Bot</span>
+              <span id="result-bot-score" class="bento-score" style="color:#9CA3AF;">0</span>
+              <span id="result-bot-badge" class="winner-badge badge-pop"
+                style="display:none;background:#ff6a00;color:#fff;">Winner!</span>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex flex-col gap-3 w-full">
+            <button id="btn-play-again"
+              class="btn-3d w-full py-4 rounded-2xl font-black text-lg text-white
+                     flex items-center justify-center gap-2"
+              style="background:#ff6a00;box-shadow:0 6px 0 0 #7b2f00;--btn-shadow:#7b2f00;">
+              <span class="material-symbols-outlined">replay</span>
+              Play Again
+            </button>
+            <button id="btn-change-settings"
+              class="btn-3d w-full py-3 rounded-2xl font-bold text-base text-white
+                     flex items-center justify-center gap-2"
+              style="background:#2C3E50;box-shadow:0 5px 0 0 #0f1e2b;--btn-shadow:#0f1e2b;">
+              <span class="material-symbols-outlined">tune</span>
+              Change Settings
+            </button>
+            <button id="btn-result-menu"
+              class="w-full py-2 rounded-xl font-semibold text-sm
+                     flex items-center justify-center gap-1 hover:opacity-70 transition-opacity"
+              style="color:rgba(44,62,80,0.45);">
+              <span class="material-symbols-outlined text-base">home</span>
+              Main Menu
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/bot.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

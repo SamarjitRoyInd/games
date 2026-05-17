@@ -1,0 +1,82 @@
+/* ── Game board SVG ───────────────────────────────────────── */
+#game-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: default;
+}
+
+/* ── Confetti overlay (Lottie) ────────────────────────────── */
+#confetti-overlay {
+  transition: opacity 0.5s ease;
+}
+
+/* ── Victory screen ───────────────────────────────────────── */
+.result-card {
+  transition: box-shadow 0.3s ease;
+}
+
+.victory-title {
+  text-shadow: 0 5px 0 #7b2f00;
+  letter-spacing: 0.08em;
+}
+
+.bento-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 0 0 #DBC7AF;
+  border: 2px solid #e4e2e2;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.bento-card.winner {
+  border-color: #0e6779;
+  box-shadow: 0 6px 0 0 #004e5d;
+}
+
+.winner-badge {
+  background: #A4DE02;
+  color: #1a3300;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* score number sizes */
+.bento-score {
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  font-family: Rubik, sans-serif;
+}
+
+/* ── Header bar (game screen) ─────────────────────────────── */
+.game-header {
+  background: #1e2e3d;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Score cards ──────────────────────────────────────────── */
+.score-row {
+  padding: 8px 16px;
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .game-header { padding: 10px 24px; }
+  .score-row   { padding: 10px 24px; }
+  .bento-score { font-size: 3rem; }
+}
