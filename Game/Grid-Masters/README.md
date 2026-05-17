@@ -5,7 +5,8 @@
 ![Grid Masters](assets/wood-bg.jpg)
 
 ---
-##Live Preview
+## Live Preview
+
 https://games-five-rust.vercel.app/
 
 ## Features
